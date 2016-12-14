@@ -1,0 +1,34 @@
+---
+# default
+ironic_db_password: password
+testing: false
+ipa_kernel: "{{http_boot_folder}}/deploy_kernel"
+ipa_ramdisk: "{{http_boot_folder}}/deploy_ramdisk"
+ipa_kernel_url: "{{ ipa_file_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{file_url_port}}/deploy_kernel"
+ipa_ramdisk_url: "{{ ipa_file_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{file_url_port}}/deploy_ramdisk"
+use_cirros: true
+create_image_via_dib: false
+transform_boot_image: false
+create_ipa_image: false
+ironicclient_source_install: true
+ironicinspector_source_install: true
+ironicinspectorclient_source_install: true
+ironicstagingdrivers_source_install: true
+install_staging_drivers: true
+inventory_dhcp: true
+enabled_drivers: fake_ansible
+pxe_drivers: pxe_ipmitool_ansible,pxe_libvirt_ansible,pxe_ssh_ansible
+#ssh_public_key: "none"
+ipv4_subnet_mask: "{{ dhcp_static_mask }}"
+inspect_nodes: true
+
+# specific
+network_interface: "ens4"
+ipa_kernel_upstream_url: http://10.20.0.1/ansible_ubuntu.kernel
+ipa_ramdisk_upstream_url: http://10.20.0.1/ansible_ubuntu.initramfs
+cirros_deploy_image_upstream_url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+ipv4_gateway: 10.20.0.2
+dhcp_pool_start: 10.20.0.10
+dhcp_pool_end: 10.20.0.100
+dhcp_static_mask: 255.255.255.0
+ssh_public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClIwlkr2nH8tCa2VnDgYpsVccJ4pX44mEdjt4oYqSdvEzXKaLhkC2vRzZ/DJo+1GjHC1cy6oPq26bo186MZ2/6PBh2gyVR5rRWyOFoNocAUaaEnBxu8TtNewIzrZ9k+telbmzz/PcoXkELLsHjrTPPxGlpI6qmk3WL/vJlXumvlZlv/FUbI8RlMxTuOK3TF5AQBGd3+1UkF+qFcAFGAAVFO0Td69MMQcsIhLCzJ68d7YM60+3z37At0x/URNlRwgf5Wt8NLPUQwo1dCDCK4GSZtqAHzj7IKVyk77twiN0SLQR12eTqUkyEjm6zR6QpZ6mpIbAjRVVFV5W55WTZXpIz"

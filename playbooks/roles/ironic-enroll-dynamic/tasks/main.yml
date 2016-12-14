@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: "Collect facts"
+  setup:
+
 - name: "If in noauth mode, unset authentication parameters."
   set_fact:
     auth_type: None
@@ -43,10 +46,9 @@
     name: "{{ name | default() }}"
     state: present
     nics: "{{nics}}"
-    properties: "{{ properties }}"
+    properties: "{{ properties|default({}) }}"
     driver_info:
       power: "{{ driver_info.power }}"
       deploy:
         deploy_kernel: "{{ ipa_kernel_url }}"
         deploy_ramdisk: "{{ ipa_ramdisk_url }}"
-  delegate_to: localhost
