@@ -99,4 +99,6 @@
 - name: "Install ironic-staging-drivers"
   include: staging_install.yml
   when: staging_drivers_include | bool == true
-
+- name: "Install ansible"
+  command: pip install ansible==2.1
+  when: skip_install is not defined

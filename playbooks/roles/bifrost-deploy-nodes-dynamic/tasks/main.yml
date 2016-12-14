@@ -17,6 +17,9 @@
 # the pass-through could mean that the user could deploy
 # things that are not directly accessible or reasonable
 # to be inspected.
+- name: "setup"
+  setup:
+
 - name: "If in noauth mode, unset authentication parameters."
   set_fact:
     auth_type: None
@@ -40,11 +43,10 @@
 - name: "Setup DHCP for nodes."
   template:
     src: dhcp-host.j2
-    dest: "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/{{ inventory_hostname }}"
+    dest: "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/{{ nics[0]['mac'] }}"
     owner: root
     group: root
     mode: 0644
-  delegate_to: localhost
   when: inventory_dhcp | bool == true
   become: yes
 - name: "Setup DNS address for nodes."
@@ -54,7 +56,6 @@
     owner: root
     group: root
     mode: 0644
-  delegate_to: localhost
   when: inventory_dns | bool == true
   become: yes
 - name: "Sending dnsmasq HUP"
@@ -70,12 +71,12 @@
     ironic_url: "{{ ironic_url }}"
     uuid: "{{ uuid }}"
     state: present
+    wait: true
     config_drive: "{{ deploy_url_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{ file_url_port }}/configdrive-{{ uuid }}.iso.gz"
     instance_info: "{{ instance_info }}"
-  delegate_to: localhost
   when: instance_info is defined and instance_info | to_json != '{}'
 - name: "Collect the checksum of the deployment image."
-  local_action: stat path={{deploy_image}}
+  stat: path={{deploy_image}}
   register: test_deploy_image
   when: instance_info is not defined or ( instance_info is defined and instance_info | to_json == '{}' )
 - name: "Error if deploy_image is not present, and instance_info is not defined"
@@ -89,11 +90,11 @@
     ironic_url: "{{ ironic_url | default(omit) }}"
     uuid: "{{ uuid }}"
     state: present
+    wait: true
     config_drive: "{{ deploy_url_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{ file_url_port }}/configdrive-{{ uuid }}.iso.gz"
     instance_info:
       image_source: "{{ deploy_url_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{ file_url_port }}/{{deploy_image_filename}}"
       image_checksum: "{{ test_deploy_image.stat.md5 }}"
       image_disk_format: "qcow2"
       root_gb: 10
-  delegate_to: localhost
   when: instance_info is not defined or ( instance_info is defined and instance_info | to_json == '{}' )
