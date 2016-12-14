@@ -1,4 +1,5 @@
 ---
+ironic_url: "http://localhost:6385/"
 # Cleaning turns on ironic conductor clean_nodes flag
 # which causes the nodes to be wiped after deletion.
 cleaning: false

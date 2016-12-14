@@ -341,3 +341,11 @@
 - name: "Configure remote logging"
   template: src=10-rsyslog-remote.conf.j2 dest=/etc/rsyslog.d/10-rsyslog-remote.conf
   when: remote_syslog_server is defined and remote_syslog_server != ""
+- name: "Set ironic private key"
+  include: set_ssh_private_key.yml
+  when: ssh_private_key_path is defined or ssh_private_key is defined
+- name: "Write openrc"
+  template:
+    src: openrc.j2
+    dest: "{{ ansible_env.HOME }}/openrc"
+    mode: 0644
