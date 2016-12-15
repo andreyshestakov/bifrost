@@ -1,0 +1,33 @@
+---
+  auto-ip1:
+    uuid: "00000000-0000-0000-0000-000000000001"
+    driver_info:
+      power:
+        ssh_port: 22
+        ssh_username: "ashestakov"
+        ssh_virt_type: "virsh"
+        ssh_address: "192.168.122.1"
+        ssh_key_filename: "/home/ironic/.ssh/id_rsa"
+    nics:
+      -
+        mac: "52:54:00:9f:0a:30"
+    driver: "agent_ssh"
+    inventory_dhcp_static_ip: false
+    addressing_mode: "dhcp"
+    name: "auto-ip1"
+  static-ip2:
+    uuid: "00000000-0000-0000-0000-000000000002"
+    driver_info:
+      power:
+        ssh_port: 22
+        ssh_username: "ashestakov"
+        ssh_virt_type: "virsh"
+        ssh_address: "192.168.122.1"
+        ssh_key_filename: "/home/ironic/.ssh/id_rsa"
+    nics:
+      -
+        mac: "52:54:00:5a:60:2f"
+    driver: "agent_ssh"
+    ipv4_address: "10.20.0.66"
+    name: "static-ip2"
+
