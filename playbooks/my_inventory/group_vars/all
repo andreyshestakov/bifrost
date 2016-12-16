@@ -23,8 +23,8 @@ staging_drivers_include: true
 
 # specific
 network_interface: "ens4"
-ipa_kernel_upstream_url: http://10.20.0.1/ansible_ubuntu.kernel
-ipa_ramdisk_upstream_url: http://10.20.0.1/ansible_ubuntu.initramfs
+ipa_kernel_upstream_url: http://10.20.0.1/ansible_deploy.kernel
+ipa_ramdisk_upstream_url: http://10.20.0.1/ansible_deploy.initramfs
 cirros_deploy_image_upstream_url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
 ipv4_gateway: 10.20.0.2
 dhcp_pool_start: 10.20.0.10
@@ -33,3 +33,7 @@ dhcp_static_mask: 255.255.255.0
 ssh_public_key_path: /home/ashestakov/ansible_deploy.rsa.pub
 remote_syslog_server: 10.20.0.1
 ssh_private_key_path: /home/ashestakov/ansible_deploy.rsa
+
+staging_drivers_source_install: true
+staging_drivers_git_url: https://github.com/andreyshestakov/ironic-staging-drivers
+staging_drivers_git_branch: my_fixes

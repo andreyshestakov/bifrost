@@ -11,7 +11,7 @@
     nics:
       -
         mac: "52:54:00:9f:0a:30"
-    driver: "agent_ssh"
+    driver: "pxe_ssh_ansible"
     inventory_dhcp_static_ip: false
     addressing_mode: "dhcp"
     name: "auto-ip1"
@@ -27,7 +27,7 @@
     nics:
       -
         mac: "52:54:00:5a:60:2f"
-    driver: "agent_ssh"
+    driver: "pxe_ssh_ansible"
     ipv4_address: "10.20.0.66"
     name: "static-ip2"
 
