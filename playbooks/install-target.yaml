@@ -4,6 +4,8 @@
   become: yes
   gather_facts: no
   tasks:
+    - name: "setup IP on Ironic interface"
+      raw: ifconfig {{ network_interface }} 10.20.0.2/24 up
     - name: "wait apt"
       raw: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30;done
     - name: "apt update"
