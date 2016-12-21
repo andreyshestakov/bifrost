@@ -73,3 +73,11 @@ bifrost_install_sources:
     git_url: "{{ keystone_git_url }}"
     git_branch: "{{ keystone_git_branch }}"
     name: keystone
+  - git_folder: "{{ horizon_git_folder }}"
+    git_url: "{{ horizon_git_url }}"
+    git_branch: "{{ horizon_git_branch }}"
+    name: horizon
+  - git_folder: "{{ ironic_ui_git_folder }}"
+    git_url: "{{ ironic_ui_git_url }}"
+    git_branch: "{{ ironic_ui_git_branch }}"
+    name: ironic_ui

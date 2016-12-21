@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+server {
+    listen 80;
+    access_log /var/log/nginx/horizon/access.log;
+    error_log /var/log/nginx/horizon/error.log;
+    location / {
+        uwsgi_pass unix:///run/uwsgi/horizon.socket;
+        include uwsgi_params;
+        uwsgi_param SCRIPT_NAME '';
+    }
+}
