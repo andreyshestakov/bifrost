@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+[uwsgi]
+master = true
+processes = 2
+threads = 2
+plugin = python
+no-orphans = true
+chmod-socket = 660
+
+socket = /run/uwsgi/horizon.socket
+pidfile = /run/uwsgi/horizon.pid
+logto = /tmp/hor
+
+name = horizon
+uid = horizon
+gid = {{ nginx_user }}
+
+chdir = /etc/openstack-dashboard/
+wsgi-file = /var/www/horizon/horizon.wsgi
