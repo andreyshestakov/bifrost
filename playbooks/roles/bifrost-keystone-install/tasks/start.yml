@@ -16,7 +16,7 @@
   when: init_template == 'systemd_template.j2'
 
 - name: "Ensure required services are started"
-  service: name={{ item }} state=restarted
+  service: name={{ item }} state=restarted enabled=yes
   with_items:
     - nginx
     - uwsgi
