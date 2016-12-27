@@ -45,7 +45,7 @@ conf-dir=/etc/dnsmasq.d
 {% if inventory_dhcp | bool == true %}
 addn-hosts=/etc/dnsmasq.d/bifrost.hosts.d
 dhcp-hostsfile=/etc/dnsmasq.d/bifrost.dhcp-hosts.d
-#dhcp-ignore=tag:!known
+dhcp-ignore=tag:!known
 {% endif %}
 
 # Set the domain for dnsmasq. this is optional, but if it is set, it

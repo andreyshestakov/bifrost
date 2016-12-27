@@ -43,7 +43,7 @@
 - name: "Setup DHCP for nodes."
   template:
     src: dhcp-host.j2
-    dest: "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/{{ nics[0]['mac'] }}"
+    dest: "/etc/dnsmasq.d/bifrost.dhcp-hosts.d/{{ inventory_hostname }}"
     owner: root
     group: root
     mode: 0644
@@ -97,5 +97,6 @@
       image_checksum: "{{ test_deploy_image.stat.md5 }}"
       image_disk_format: "qcow2"
       root_gb: 10
-      ipv4_address: "{{ ipv4_address }}"
+      ipv4_address: "{{ ipv4_address|default('') }}"
+      tags: "{{ tags|default('[]') }}"
   when: instance_info is not defined or ( instance_info is defined and instance_info | to_json == '{}' )

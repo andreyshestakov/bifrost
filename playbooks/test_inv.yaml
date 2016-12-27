@@ -13,6 +13,8 @@
         mac: "52:54:00:9f:0a:30"
     ipv4_address: "10.20.0.98"
     driver: "pxe_ssh_ansible"
+    tags:
+      - k8s_etcd
     name: "static-ip1"
   static-ip2:
     uuid: "00000000-0000-0000-0000-000000000002"
@@ -28,5 +30,8 @@
         mac: "52:54:00:5a:60:2f"
     driver: "pxe_ssh_ansible"
     ipv4_address: "10.20.0.66"
+    tags:
+      - k8s_master
+      - k8s_etcd
     name: "static-ip2"
 
