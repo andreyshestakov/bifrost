@@ -97,4 +97,5 @@
       image_checksum: "{{ test_deploy_image.stat.md5 }}"
       image_disk_format: "qcow2"
       root_gb: 10
+      ipv4_address: "{{ ipv4_address }}"
   when: instance_info is not defined or ( instance_info is defined and instance_info | to_json == '{}' )

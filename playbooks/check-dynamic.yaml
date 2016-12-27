@@ -1,0 +1,13 @@
+---
+- hosts: baremetal
+  name: "Check"
+  become: no
+  gather_facts: no
+  tasks:
+    - name: "wait for node"
+      wait_for:
+        host: "{{ ipv4_address }}"
+        port: 22
+        delay: 2
+        timeout: 10
+      delegate_to: "{{ groups['target'][0] }}"

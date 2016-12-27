@@ -1,5 +1,5 @@
 ---
-  auto-ip1:
+  static-ip1:
     uuid: "00000000-0000-0000-0000-000000000001"
     driver_info:
       power:
@@ -11,10 +11,9 @@
     nics:
       -
         mac: "52:54:00:9f:0a:30"
+    ipv4_address: "10.20.0.98"
     driver: "pxe_ssh_ansible"
-    inventory_dhcp_static_ip: false
-    addressing_mode: "dhcp"
-    name: "auto-ip1"
+    name: "static-ip1"
   static-ip2:
     uuid: "00000000-0000-0000-0000-000000000002"
     driver_info:
