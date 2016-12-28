@@ -232,3 +232,7 @@ ironic_inspector:
 # direction of identifying the address of the conductor host
 # in a more uniform fashion. What that is exactly, is TBD.
 my_ip_address: "{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}"
+
+remote_syslog_port: "514"
+remote_syslog_proto: "udp"
+collect_baremetal_logs: false

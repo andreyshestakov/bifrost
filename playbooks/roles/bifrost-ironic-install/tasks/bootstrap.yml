@@ -341,6 +341,17 @@
 - name: "Configure remote logging"
   template: src=10-rsyslog-remote.conf.j2 dest=/etc/rsyslog.d/10-rsyslog-remote.conf
   when: remote_syslog_server is defined and remote_syslog_server != ""
+- name: "Make directory for collected logs"
+  file:
+    name: "/var/log/remote"
+    state: directory
+    owner: "syslog"
+    group: "syslog"
+    mode: 0755
+  when: collect_baremetal_logs | bool == true
+- name: "Configure collecting logs from baremetal nodes"
+  template: src=15-collect-remote.conf.j2 dest=/etc/rsyslog.d/15-collect-remote.conf
+  when: collect_baremetal_logs | bool == true
 - name: "Set ironic private key"
   include: set_ssh_private_key.yml
   when: ssh_private_key_path is defined or ssh_private_key is defined

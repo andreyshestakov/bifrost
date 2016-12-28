@@ -46,3 +46,6 @@ noauth_mode: false
 enable_horizon: true
 horizon_git_branch: c6d656a0b113cbef690550f959bb9663826388af
 ironic_ui_git_url: https://github.com/andreyshestakov/ironic-ui
+
+collect_baremetal_logs: true
+internal_syslog_proto: tcp

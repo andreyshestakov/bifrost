@@ -1,0 +1,13 @@
+template(name="remote_node_logfile" type="string" string="/var/log/remote/%fromhost-ip%/syslog.log")
+
+ruleset(name="collect_remote"){
+  # Save logs to local file
+  *.* action(type="omfile" DynaFile="remote_node_logfile")
+{% if remote_syslog_server is defined and remote_syslog_server != "" %}
+  # Forward logs to remote syslog
+  *.* action(type="omfwd" Target="{{ remote_syslog_server }}" Port="{{ remote_syslog_port }}" Protocol="{{ remote_syslog_proto }}")
+{% endif %}
+}
+
+module(load="im{{ remote_syslog_proto }}")
+input(type="im{{ remote_syslog_proto }}" port="{{ remote_syslog_port }}" ruleset="collect_remote")
