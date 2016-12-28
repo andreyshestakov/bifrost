@@ -352,6 +352,9 @@
 - name: "Configure collecting logs from baremetal nodes"
   template: src=15-collect-remote.conf.j2 dest=/etc/rsyslog.d/15-collect-remote.conf
   when: collect_baremetal_logs | bool == true
+- name: "Configure logrotate for remote logs"
+  template: src=logrotate-remote.j2 dest=/etc/logrotate.d/remote
+  when: collect_baremetal_logs | bool == true
 - name: "Set ironic private key"
   include: set_ssh_private_key.yml
   when: ssh_private_key_path is defined or ssh_private_key is defined
