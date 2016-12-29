@@ -1,6 +1,5 @@
 ---
   static-ip1:
-    uuid: "00000000-0000-0000-0000-000000000001"
     driver_info:
       power:
         ssh_port: 22
@@ -17,7 +16,6 @@
       - k8s_etcd
     name: "static-ip1"
   static-ip2:
-    uuid: "00000000-0000-0000-0000-000000000002"
     driver_info:
       power:
         ssh_port: 22

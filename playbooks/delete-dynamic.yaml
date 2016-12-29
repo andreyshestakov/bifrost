@@ -1,0 +1,7 @@
+- hosts: baremetal
+  name: "Delete the node"
+  become: no
+  gather_facts: no
+  roles:
+    - role: ironic-delete-dynamic
+      delegate_to: "{{ groups['target'][0] }}"
