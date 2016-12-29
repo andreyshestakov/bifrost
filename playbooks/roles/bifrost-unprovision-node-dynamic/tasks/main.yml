@@ -41,5 +41,5 @@
     uuid: "{{ uuid | default() }}"
     name: "{{ name | default() }}"
     state: absent
+    wait: true
     instance_info: "{}"
-  delegate_to: localhost

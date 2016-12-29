@@ -1,0 +1,7 @@
+- hosts: baremetal
+  name: "Unprovisions the test node"
+  become: no
+  gather_facts: no
+  roles:
+    - role: bifrost-unprovision-node-dynamic
+      delegate_to: "{{ groups['target'][0] }}"
