@@ -66,5 +66,6 @@
     auth_type: "{{ auth_type | default(omit) }}"
     auth: "{{ auth | default(omit) }}"
     ironic_url: "{{ ironic_url | default(omit) }}"
-    uuid: "{{ uuid }}"
+    uuid: "{{ uuid | default('') }}"
+    name: "{{ name | default('') }}"
     timeout: "{{ inspection_wait_timeout }}"
