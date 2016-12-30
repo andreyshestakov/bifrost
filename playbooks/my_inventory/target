@@ -1,2 +1,2 @@
 [target]
-192.168.122.194 ansible_connection=ssh ansible_user=user ansible_ssh_pass=user ansible_become_pass=user
+172.18.204.123 ansible_connection=ssh ansible_user=user ansible_ssh_pass=user ansible_become_pass=user ansible_port=2222
