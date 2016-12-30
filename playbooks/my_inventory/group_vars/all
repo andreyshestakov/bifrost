@@ -43,6 +43,6 @@ ipv4_gateway: 10.20.0.2
 dhcp_pool_start: 10.20.0.10
 dhcp_pool_end: 10.20.0.100
 dhcp_static_mask: 255.255.255.0
-ssh_public_key_path: /home/ashestakov/ansible_deploy.rsa.pub
+ssh_public_key_path: ansible_deploy.rsa.pub
 remote_syslog_server: 10.20.0.1
-ssh_private_key_path: /home/ashestakov/ansible_deploy.rsa
+ssh_private_key_path: ansible_deploy.rsa
