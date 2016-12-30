@@ -13,8 +13,11 @@
     ipv4_address: "10.20.0.98"
     driver: "pxe_ssh_ansible"
     tags:
-      - k8s_etcd
+      - kube-master
+      - kube-node
+      - etcd
     name: "static-ip1"
+
   static-ip2:
     driver_info:
       power:
@@ -29,7 +32,6 @@
     driver: "pxe_ssh_ansible"
     ipv4_address: "10.20.0.66"
     tags:
-      - k8s_master
-      - k8s_etcd
+      - kube-node
+      - etcd
     name: "static-ip2"
-
