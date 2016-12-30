@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
+- name: "setup"
+  setup:
+
 - name: "If in noauth mode, unset authentication parameters."
   set_fact:
     auth_type: None
@@ -32,6 +35,15 @@
   when: auth is undefined
   no_log: yes
 
+- name: "Pull initial ironic facts"
+  os_ironic_facts:
+    auth_type: "{{ auth_type | default(omit) }}"
+    auth: "{{ auth | default(omit) }}"
+    uuid: "{{ uuid | default() }}"
+    name: "{{ name | default() }}"
+    ironic_url: "{{ ironic_url }}"
+    skip_items: []
+
 - name: "Unprovision node"
   os_ironic_node:
     cloud: "{{ cloud_name | default(omit) }}"
@@ -43,3 +55,17 @@
     state: absent
     wait: true
     instance_info: "{}"
+  when: (provision_state == "active" or provision_state == "deploy failed" or provision_state == "error") and maintenance | bool != true
+
+- name: "Pull ironic facts until provision state available"
+  os_ironic_facts:
+    auth_type: "{{ auth_type | default(omit) }}"
+    auth: "{{ auth | default(omit) }}"
+    uuid: "{{ uuid | default() }}"
+    name: "{{ name | default() }}"
+    ironic_url: "{{ ironic_url }}"
+    skip_items: []
+  register: result
+  until: provision_state == "available"
+  retries: "{{ available_state_wait_retries | default(15) }}"
+  delay: "{{ provision_state_retry_interval | default(20) }}"
