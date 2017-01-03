@@ -26,8 +26,6 @@ auth_strategy = keystone
 auth_strategy = noauth
 {% endif %}
 
-use_syslog = true
-
 [pxe]
 pxe_append_params = systemd.journald.forward_to_console=yes {{ extra_kernel_options | default('') }}
 pxe_config_template = $pybasedir/drivers/modules/ipxe_config.template
