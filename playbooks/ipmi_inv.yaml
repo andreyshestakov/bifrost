@@ -1,0 +1,33 @@
+---
+  cz7940-kvm:
+    driver_info:
+      power:
+        ipmi_username: "engineer"
+        ipmi_address: "5.43.227.41"
+        ipmi_password: "6gX89F9xVDwmfMam"
+    nics:
+      -
+        mac: "0c:c4:7a:6c:9b:74"
+    ipv4_address: "10.20.0.98"
+    driver: "pxe_ipmitool_ansible"
+    tags:
+      - kube-master
+      - kube-node
+      - etcd
+    name: "cz7940-kvm"
+
+  cz7941-kvm:
+    driver_info:
+      power:
+        ipmi_username: "engineer"
+        ipmi_address: "5.43.227.42"
+        ipmi_password: "6gX89F9xVDwmfMam"
+    nics:
+      -
+        mac: "0c:c4:7a:6c:89:08"
+    driver: "pxe_ipmitool_ansible"
+    ipv4_address: "10.20.0.66"
+    tags:
+      - kube-node
+      - etcd
+    name: "cz7941-kvm"

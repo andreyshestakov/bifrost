@@ -1,2 +1,3 @@
 [target]
-192.168.122.194 ansible_connection=ssh ansible_user=user ansible_ssh_pass=user ansible_become_pass=user
+# cz7918.bud
+172.18.162.224 ansible_connection=ssh ansible_user=user ansible_ssh_pass=user ansible_become_pass=user ansible_ssh_port=2222
