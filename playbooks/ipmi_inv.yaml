@@ -31,3 +31,19 @@
       - kube-node
       - etcd
     name: "cz7941-kvm"
+
+  cz7942-kvm:
+    driver_info:
+      power:
+        ipmi_username: "engineer"
+        ipmi_address: "5.43.227.43"
+        ipmi_password: "6gX89F9xVDwmfMam"
+    nics:
+      -
+        mac: "0c:c4:7a:6c:87:52"
+    driver: "pxe_ipmitool_ansible"
+    ipv4_address: "10.20.0.99"
+    tags:
+      - kube-node
+      - etcd
+    name: "cz7942-kvm"
