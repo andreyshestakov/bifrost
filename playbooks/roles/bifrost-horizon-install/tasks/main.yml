@@ -11,28 +11,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-# NOTE(cinerama) dummy-defaults.yml is an empty defaults file. We use it
-# here to ensure that with_first_found won't fail should we not have
-# defaults for a particular distribution, version, etc.
-#- name: Include OS family-specific defaults
-#  include_vars: "{{ item }}"
-#  with_first_found:
-#    - "../defaults/required_defaults_{{ ansible_os_family }}_family.yml"
-#    - "../defaults/dummy-defaults.yml"
-#
-#- name: Include OS distribution-specific defaults
-#  include_vars: "{{ item }}"
-#  with_first_found:
-#    - "../defaults/required_defaults_{{ ansible_distribution }}.yml"
-#    - "../defaults/dummy-defaults.yml"
-#
-#- name: Include OS version-specific defaults
-#  include_vars: "{{ item }}"
-#  with_first_found:
-#    - "../defaults/required_defaults_{{ ansible_distribution }}_{{ ansible_distribution_release }}.yml"
-#    - "../defaults/required_defaults_{{ ansible_distribution }}_{{ ansible_distribution_version }}.yml"
-#    - "../defaults/dummy-defaults.yml"
-
 - name: "Install Horizon"
   include: install.yml
   when: enable_horizon is defined and enable_horizon |bool == True and skip_package_install | bool != True
