@@ -1,0 +1,187 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+# NOTE(TheJulia): There is significant commonality between this playbook
+# and the bifrost bootstrap process.
+- name: "If VENV is set in the environment, enable installation into venv"
+  set_fact:
+    enable_venv: true
+  when: lookup('env', 'VENV') | length > 0
+
+# NOTE(sean-k-mooney) only the RabbitMQ server and MySQL db are started
+# during bootstrapping. all other services are started in the Start phase.
+- name: "Start database service"
+  service: name={{ mysql_service_name }} state=started enabled=yes
+
+- name: "Start rabbitmq-server"
+  service: name=rabbitmq-server state=started enabled=yes
+
+# NOTE(cinerama): on some systems, rabbit may not be ready when we want to
+# make changes to users if we don't wait first
+- name: "Wait for rabbitmq"
+  wait_for: port=5672 delay=5
+
+- name: "Ensure guest user is removed from rabbitmq"
+  rabbitmq_user:
+    user: "guest"
+    state: absent
+    force: yes
+
+- name: "Create neutron user in RabbitMQ"
+  rabbitmq_user:
+    user: "{{ neutron.message_queue.username }}"
+    password: "{{ neutron.message_queue.password }}"
+    force: yes
+    state: present
+    configure_priv: ".*"
+    write_priv: ".*"
+    read_priv: ".*"
+  no_log: true
+
+- name: "Set mysql_username if environment variable mysql_user is set"
+  set_fact:
+    mysql_username: "{{ lookup('env', 'mysql_user') }}"
+  when: lookup('env', 'mysql_user') | length > 0
+  no_log: true
+
+- name: "Set mysql_password if environment variable mysql_pass is set"
+  set_fact:
+    mysql_password: "{{ lookup('env', 'mysql_pass') }}"
+  when: lookup('env', 'mysql_pass') | length > 0
+  no_log: true
+
+- name: "MySQL - Creating DB"
+  mysql_db:
+    name: "{{ neutron.database.name }}"
+    state: present
+    encoding: utf8
+    login_user: "{{ mysql_username | default(None) }}"
+    login_password: "{{ mysql_password | default(None) }}"
+  register: test_created_neutron_db
+
+- name: "MySQL - Creating user for neutron"
+  mysql_user:
+    name: "{{ neutron.database.username }}"
+    password: "{{ neutron.database.password }}"
+    priv: "{{ neutron.database.name }}.*:ALL"
+    state: present
+    login_user: "{{ mysql_username | default(None) }}"
+    login_password: "{{ mysql_password | default(None) }}"
+
+- name: "Create an neutron service group"
+  group:
+    name: "neutron"
+
+- name: "Create an neutron service user"
+  user:
+    name: "neutron"
+    group: "neutron"
+
+- name: "Ensure /etc/neutron/plugins/ml2 exists"
+  file:
+    name: "/etc/neutron/plugins/ml2"
+    state: directory
+    recurse: yes
+    owner: "neutron"
+    group: "neutron"
+    mode: 0755
+
+- name: "Ensure /var/lib/neutron exists"
+  file:
+    name: "/var/lib/neutron"
+    state: directory
+    owner: "neutron"
+    group: "neutron"
+    mode: 0755
+
+- name: "Write neutron configuration from template"
+  template:
+    src: neutron.conf.j2
+    dest: "/etc/neutron/neutron.conf"
+    owner: "neutron"
+    group: "neutron"
+    mode: 0755
+
+- name: "Copy policy.json to /etc/neutron"
+  copy:
+    remote_src: true
+    src: "{{ neutron_git_folder }}/etc/policy.json"
+    dest: "/etc/neutron/"
+    owner: "neutron"
+    group: "neutron"
+    mode: 0644
+
+- name: "Copy rootwrap.conf to /etc/neutron"
+  copy:
+    remote_src: true
+    src: "{{ neutron_git_folder }}/etc/rootwrap.conf"
+    dest: "/etc/neutron/"
+    owner: "neutron"
+    group: "neutron"
+    mode: 0644
+
+- name: "Copy rootwrap.d contents from neutron source folder"
+  command: cp -r "{{ neutron_git_folder }}/etc/neutron/rootwrap.d/" "/etc/neutron/"
+
+- name: "Copy api-paste.ini to /etc/neutron"
+  copy:
+    remote_src: true
+    src: "{{ neutron_git_folder }}/etc/api-paste.ini"
+    dest: "/etc/neutron/"
+    owner: "neutron"
+    group: "neutron"
+    mode: 0644
+
+- name: "Set sudoers for neutron-rootwrap"
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^neutron(.*)neutron-rootwrap /etc/neutron/rootwrap.conf'
+    line: "neutron ALL = (root) NOPASSWD: /usr/local/bin/neutron-rootwrap /etc/neutron/rootwrap.conf*"
+
+- name: "Set sudoers for neutron-rootwrap-daemon"
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^neutron(.*)neutron-rootwrap-daemon /etc/neutron/rootwrap.conf'
+    line: "neutron ALL = (root) NOPASSWD: /usr/local/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf*"
+
+- name: "Apply/Update neutron DB Schema"
+  command: neutron-db-manage upgrade head
+  environment: "{{ bifrost_venv_env if enable_venv else '{}' }}"
+
+- name: "Populate keystone for Bifrost"
+  include: keystone_setup.yml
+  when: enable_keystone is defined and enable_keystone | bool == true
+
+- name: "Get neutron install location"
+  shell: echo $(dirname $(which neutron-server))
+  register: neutron_install_prefix
+
+- name: "Place neutron services"
+  template:
+    src: "{{ init_template }}"
+    dest: "{{ init_dest_dir }}{{ item.service_name }}{{ init_ext }}"
+    owner: "root"
+    group: "root"
+  with_items:
+    - { service_path: "{{ neutron_install_prefix.stdout | default('') }}",
+        service_name: 'neutron-server',
+        username: 'neutron',
+        args: '--config-file /etc/neutron/neutron.conf'}
+    - { service_path: "{{ neutron_install_prefix.stdout | default('') }}",
+        service_name: 'neutron-linuxbridge-agent',
+        username: 'neutron',
+        args: '--config-file /etc/neutron/neutron.conf'}
+    - { service_path: "{{ neutron_install_prefix.stdout | default('') }}",
+        service_name: 'neutron-dhcp-agent',
+        username: 'neutron',
+        args: '--config-file /etc/neutron/neutron.conf'}

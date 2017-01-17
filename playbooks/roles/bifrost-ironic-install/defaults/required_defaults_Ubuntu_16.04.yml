@@ -37,3 +37,7 @@ required_packages:
   - python-pip
   - python-pymysql
   - libssl-dev
+  - ebtables
+  - bridge-utils
+  - dnsmasq-utils
+  - iproute2

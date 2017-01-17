@@ -358,3 +358,7 @@
 - name: "Set ironic private key"
   include: set_ssh_private_key.yml
   when: ssh_private_key_path is defined or ssh_private_key is defined
+
+- name: "bootstrap Neutron network"
+  include: bootstrap_neutron.yml
+  when: neutron.enable is defined and neutron.enable | bool == true

@@ -1,0 +1,181 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+
+# TODO(TheJulia): The user and project domains are hardcoded in this.
+# We should likely address that at some point, however I think a user
+# should be the driver of that work.
+
+- name: "Error if credentials are undefined."
+  fail:
+    msg: |
+        Credentials are missing or undefined, unable to proceed.
+        Please consult roled defaults/main.yml.
+  when: >
+      keystone is undefined or keystone.bootstrap is undefined or
+      keystone.bootstrap.username is undefined or
+      keystone.bootstrap.password is undefined or
+      keystone.bootstrap.project_name is undefined or
+      neutron.service_catalog.username is undefined or
+      neutron.service_catalog.password is undefined or
+      neutron.service_catalog.project_name is undefined
+
+- name: "Ensure service project is present"
+  os_project:
+    name: "service"
+    state: present
+    description: "Service Project"
+    domain_id: default
+    enabled: yes
+    auth:
+      auth_url: "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}/"
+      username: "{{ keystone.bootstrap.username }}"
+      password: "{{ keystone.bootstrap.password }}"
+      project_name: "admin"
+      project_domain_id: "default"
+      user_domain_id: "default"
+  environment:
+    OS_IDENTITY_API_VERSION: "3"
+#  no_log: true
+
+- name: "Create service user for neutron"
+  os_user:
+    name: "{{ neutron.service_catalog.username }}"
+    password: "{{ neutron.service_catalog.password }}"
+    state: present
+    domain: "default"
+    default_project: "{{ neutron.service_catalog.project_name }}"
+    auth:
+      auth_url: "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+      username: "{{ keystone.bootstrap.username }}"
+      password: "{{ keystone.bootstrap.password }}"
+      project_name: "admin"
+      project_domain_id: "default"
+      user_domain_id: "default"
+    wait: yes
+  environment:
+    OS_IDENTITY_API_VERSION: "3"
+  no_log: true
+
+- name: "Associate neutron user to admin role"
+  os_user_role:
+    user: "{{ neutron.service_catalog.username }}"
+    role: admin
+    project: "{{ neutron.service_catalog.project_name }}"
+    auth:
+      auth_url: "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+      username: "{{ keystone.bootstrap.username }}"
+      password: "{{ keystone.bootstrap.password }}"
+      project_name: "admin"
+      project_domain_id: "default"
+      user_domain_id: "default"
+    wait: yes
+  environment:
+    OS_IDENTITY_API_VERSION: "3"
+  no_log: true
+
+- name: "Create keystone service record for neutron"
+  os_keystone_service:
+    state: present
+    name: neutron
+    service_type: network
+    description: OpenStack Network Service
+    auth:
+      auth_url: "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+      username: "{{ keystone.bootstrap.username }}"
+      password: "{{ keystone.bootstrap.password }}"
+      project_name: "admin"
+      project_domain_id: "default"
+      user_domain_id: "default"
+    wait: yes
+  environment:
+    OS_IDENTITY_API_VERSION: "3"
+  no_log: true
+
+- name: "Check neutron admin endpoint exists"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint list -f json --noindent --service network --interface admin
+    --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+  no_log: true
+  register: test_neutron_admin_endpoint
+
+- name: "Check neutron public endpoint exists"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint list -f json --noindent --service network --interface public
+    --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+  no_log: true
+  register: test_neutron_public_endpoint
+
+- name: "Check neutron internal endpoint exists"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint list -f json --noindent --service network --interface internal
+    --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+  no_log: true
+  register: test_neutron_internal_endpoint
+
+- name: "Create neutron admin endpoint"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint create --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+    network admin "{{ neutron.keystone.admin_url | default('http://127.0.0.1:9696/') }}"
+  no_log: true
+  when: test_neutron_admin_endpoint.rc != 0 or test_neutron_admin_endpoint.stdout == '[]'
+
+- name: "Create neutron public endpoint"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint create --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+    network public "{{ neutron.keystone.public_url | default('http://127.0.0.1:9696/') }}"
+  no_log: true
+  when: test_neutron_public_endpoint.rc != 0 or test_neutron_public_endpoint.stdout == '[]'
+
+- name: "Create neutron internal endpoint"
+  command: |
+    openstack
+    --os-identity-api-version 3
+    --os-username "{{ keystone.bootstrap.username }}"
+    --os-password "{{ keystone.bootstrap.password }}"
+    --os-auth-url "{{ neutron.service_catalog.auth_url | default('http://127.0.0.1:5000/') }}"
+    --os-project-name admin
+    endpoint create --region "{{ keystone.bootstrap.region_name | default('RegionOne') }}"
+    network internal "{{ neutron.keystone.internal_url | default('http://127.0.0.1:9696/') }}"
+  no_log: true
+  when: test_neutron_internal_endpoint.rc != 0 or test_neutron_internal_endpoint.stdout == '[]'

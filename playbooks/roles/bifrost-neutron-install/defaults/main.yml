@@ -1,0 +1,80 @@
+---
+neutron_source_install: true
+# *_git_url can be overridden by local clones for offline installs
+neutron_git_url: https://git.openstack.org/openstack/neutron
+neutron_git_folder: /opt/stack/neutron
+neutron_git_branch: master
+
+# set to true to skip installing ironic dependencies
+skip_package_install: False
+# set to true to skip generation of configs, ironic db and rabbitmq configuration
+skip_bootstrap: False
+# set to true to skip starting ironic services and dependencies
+skip_start: False
+
+# Settings related to installing bifrost in a virtual environment
+enable_venv: false
+bifrost_venv_dir: "{{ lookup('env', 'VENV') | default('/opt/stack/bifrost') }}"
+bifrost_venv_env:
+  VIRTUAL_ENV: "{{ bifrost_venv_dir }}"
+  PATH: "{{ bifrost_venv_dir }}/bin:{{ ansible_env.PATH }}" # include regular path via lookup env
+  pydoc: "python -m pydoc"
+
+neutron_network:
+  bridge: "brbm"
+  cidr: 10.20.0.0/24
+  gateway: 10.20.0.2
+  allocation_pool_start: 10.20.0.10
+  allocation_pool_end: 10.20.0.100
+  dns_nameservers:
+    - 8.8.8.8
+    - 8.8.4.4
+
+neutron:
+  enable: false
+  debug: true
+  database:
+    host: localhost
+    username: neutron
+    password: password
+    name: neutron
+  message_queue:
+    username: neutron
+    password: password
+    host: localhost
+  service_catalog:
+    auth_url: "http://127.0.0.1:5000/v3"
+    username: neutron
+    password: password
+    project_name: service
+  keystone:
+    admin_url: "http://127.0.0.1:9696/"
+    public_url: "http://127.0.0.1:9696/"
+    internal_url: "http://127.0.0.1:9696/"
+
+
+mysql_service_name: mysql
+keystone:
+  debug: true
+  bootstrap:
+    enabled: true
+    username: admin
+    password: ChangeThisPa55w0rd
+    project_name: admin
+    admin_url: "http://127.0.0.1:35357/v3/"
+    public_url: "http://127.0.0.1:5000/v3/"
+    internal_url: "http://127.0.0.1:5000/v3/"
+    region_name: "RegionOne"
+  message_queue:
+    username: keystone
+    password: ChangeThisPa55w0rd
+    host: 127.0.0.1
+  database:
+    name: keystone
+    username: keystone
+    password: ChangeThisPa55w0rd
+    host: 127.0.0.1
+
+init_template: systemd_template.j2
+init_dest_dir: /lib/systemd/system/
+init_ext: .service

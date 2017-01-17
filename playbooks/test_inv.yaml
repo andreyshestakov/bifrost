@@ -17,12 +17,7 @@
       - kube-node
       - etcd
     name: "static-ip1"
-    deploy_image_filename: "baremetal_ubuntu.qcow2"
     instance_info:
-      image_source: "{{ deploy_url_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{ file_url_port }}/{{deploy_image_filename}}"
-#      image_checksum: "md5:1bd8135786ed733ba58706d2bd9fee6a"
-#      image_disk_format: "raw"
-      root_gb: 10
 
   static-ip2:
     driver_info:

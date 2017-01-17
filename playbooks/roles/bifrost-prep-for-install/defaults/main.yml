@@ -81,3 +81,7 @@ bifrost_install_sources:
     git_url: "{{ ironic_ui_git_url }}"
     git_branch: "{{ ironic_ui_git_branch }}"
     name: ironic_ui
+  - git_folder: "{{ neutron_git_folder }}"
+    git_url: "{{ neutron_git_url }}"
+    git_branch: "{{ neutron_git_branch }}"
+    name: neutron

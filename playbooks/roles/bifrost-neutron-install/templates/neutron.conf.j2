@@ -1,0 +1,61 @@
+[DEFAULT]
+debug = {{ neutron.debug | bool }}
+use_stderr = false
+use_syslog = true
+
+bind_host = 0.0.0.0
+
+core_plugin = ml2
+interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+notify_nova_on_port_status_changes = false
+notify_nova_on_port_data_changes = false
+
+{% if enable_keystone is defined and enable_keystone | bool == true %}
+auth_strategy = keystone
+{% else %}
+auth_strategy = noauth
+{% endif %}
+
+#[oslo_concurrency]
+#lock_path = /var/lib/neutron/tmp
+
+[oslo_messaging_rabbit]
+rabbit_userid = {{ neutron.message_queue.username }}
+rabbit_password = {{ neutron.message_queue.password }}
+rabbit_hosts = {{ neutron.message_queue.host }}
+
+[agent]
+root_helper = sudo /usr/local/bin/neutron-rootwrap /etc/neutron/rootwrap.conf
+root_helper_daemon = sudo /usr/local/bin/neutron-rootwrap-daemon /etc/neutron/rootwrap.conf
+
+[database]
+connection = mysql+pymysql://{{ neutron.database.username }}:{{ neutron.database.password }}@{{ neutron.database.host }}/{{ neutron.database.name }}?charset=utf8
+max_retries = -1
+
+{% if enable_keystone is defined and enable_keystone | bool == true %}
+[keystone_authtoken]
+auth_plugin = password
+auth_url = {{ neutron.service_catalog.auth_url }}
+username = {{ neutron.service_catalog.username }}
+password = {{ neutron.service_catalog.password }}
+user_domain_id = default
+project_name = {{ neutron.service_catalog.project_name }}
+project_domain_id = default
+{% endif %}
+
+[ml2]
+type_drivers = flat
+tenant_network_types = flat
+mechanism_drivers = linuxbridge
+
+[ml2_type_flat]
+flat_networks = baremetal
+
+[securitygroup]
+enable_security_group = false
+
+[linux_bridge]
+bridge_mappings = baremetal:{{ network_interface }}
+
+[vxlan]
+enable_vxlan = False

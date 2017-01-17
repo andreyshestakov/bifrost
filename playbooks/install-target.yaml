@@ -4,14 +4,20 @@
   become: yes
   gather_facts: no
   tasks:
-    - name: "setup IP on Ironic interface"
-      raw: ifconfig {{ network_interface }} 10.20.0.2/24 up
     - name: "wait apt"
       raw: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 30;done
     - name: "apt update"
       raw: apt -y update
-    - name: "install python"
-      raw: apt -y install --no-install-recommends python
+    - name: "install packages"
+      raw: apt -y install --no-install-recommends python bridge-utils
+    - name: "Create bridge"
+      raw: brctl addbr {{ network_interface }}
+    - name: "setup IP on Ironic interface"
+      raw: ifconfig {{ network_interface }} 10.20.0.2/24 up
+    - name: "Add phys interface to bridge"
+      raw: brctl addif {{ network_interface }} {{ neutron_network.phys_int }}
+    - name: "Up phys interface"
+      raw: ifconfig {{ neutron_network.phys_int }} up
 
 - hosts: target
   name: "Install Ironic on the local host."
@@ -20,6 +26,7 @@
   roles:
     - { role: bifrost-prep-for-install, when: skip_install is not defined }
     - bifrost-keystone-install
+    - bifrost-neutron-install
     - bifrost-horizon-install
     - bifrost-ironic-install
     - { role: bifrost-keystone-client-config, config_username: "{{ ironic.keystone.default_username }}", config_password: "{{ ironic.keystone.default_password }}", config_project_name: "baremetal", config_region_name: "{{ keystone.bootstrap.region_name }}", config_auth_url: "{{ keystone.bootstrap.public_url }}", user: "{{ ansible_env.SUDO_USER }}", when: enable_keystone is defined and enable_keystone | bool == true }

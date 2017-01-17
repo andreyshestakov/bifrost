@@ -5,10 +5,12 @@
 
 
 [DEFAULT]
-# NOTE(TheJulia): Until Bifrost supports neutron or some other network
-# configuration besides a flat network where bifrost orchustrates the
-# control instead of ironic, noop is the only available network driver.
+{% if neutron.enable is defined and neutron.enable | bool == true %}
+enabled_network_interfaces = noop,flat,neutron
+default_network_interface = neutron
+{% else %}
 enabled_network_interfaces = noop
+{% endif%}
 {% if testing | bool == true %}
 enabled_drivers = agent_ssh,pxe_ssh
 debug = true
@@ -47,8 +49,21 @@ automated_clean = {{ cleaning | lower }}
 [database]
 connection = mysql+pymysql://ironic:{{ ironic_db_password }}@localhost/ironic?charset=utf8
 
+{% if neutron.enable is defined and neutron.enable | bool == true %}
+[neutron]
+auth_plugin = password
+auth_url = {{ neutron.service_catalog.auth_url }}
+username = {{ neutron.service_catalog.username }}
+password = {{ neutron.service_catalog.password }}
+user_domain_id = default
+project_name = {{ neutron.service_catalog.project_name }}
+project_domain_id = default
+provisioning_network=baremetal
+cleaning_network=baremetal
+{% else %}
 [dhcp]
 dhcp_provider = none
+{% endif%}
 
 {% if testing | bool == true %}
 [ssh]

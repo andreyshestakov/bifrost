@@ -6,7 +6,8 @@ ipa_kernel: "{{http_boot_folder}}/deploy_kernel"
 ipa_ramdisk: "{{http_boot_folder}}/deploy_ramdisk"
 ipa_kernel_url: "{{ ipa_file_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{file_url_port}}/deploy_kernel"
 ipa_ramdisk_url: "{{ ipa_file_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{file_url_port}}/deploy_ramdisk"
-use_cirros: true
+download_ipa: false
+use_cirros: false
 create_image_via_dib: false
 transform_boot_image: false
 create_ipa_image: false
@@ -17,7 +18,6 @@ install_staging_drivers: true
 inventory_dhcp: false
 enabled_drivers: fake_ansible
 pxe_drivers: pxe_ipmitool_ansible,pxe_libvirt_ansible,pxe_ssh_ansible,agent_ssh
-ipv4_subnet_mask: "{{ dhcp_static_mask }}"
 inspect_nodes: false
 staging_drivers_include: true
 staging_drivers_source_install: true
@@ -28,6 +28,7 @@ noauth_mode: false
 enable_horizon: true
 collect_baremetal_logs: true
 internal_syslog_proto: tcp
+network_interface: "brbm"
 
 horizon_git_branch: c6d656a0b113cbef690550f959bb9663826388af
 ironic_ui_git_url: https://github.com/andreyshestakov/ironic-ui
@@ -35,14 +36,16 @@ staging_drivers_git_url: https://github.com/andreyshestakov/ironic-staging-drive
 staging_drivers_git_branch: works
 
 # specific
-network_interface: "brbm"
-ipa_kernel_upstream_url: http://10.20.0.1/ansible_deploy.kernel
-ipa_ramdisk_upstream_url: http://10.20.0.1/ansible_deploy.initramfs
-cirros_deploy_image_upstream_url: http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
-ipv4_gateway: 10.20.0.2
-dhcp_pool_start: 10.20.0.10
-dhcp_pool_end: 10.20.0.100
-dhcp_static_mask: 255.255.255.0
 ssh_public_key_path: /home/ashestakov/ansible_deploy.rsa.pub
 remote_syslog_server: 10.20.0.1
 ssh_private_key_path: /home/ashestakov/ansible_deploy.rsa
+
+neutron_network:
+  phys_int: ens4
+  cidr: 10.20.0.0/24
+  gateway: 10.20.0.2
+  allocation_pool_start: 10.20.0.10
+  allocation_pool_end: 10.20.0.100
+  dns_nameservers:
+    - 8.8.8.8
+    - 8.8.4.4
