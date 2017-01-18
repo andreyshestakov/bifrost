@@ -24,7 +24,6 @@
   become: yes
   gather_facts: yes
   roles:
-    - { role: bifrost-prep-for-install, when: skip_install is not defined }
     - bifrost-keystone-install
     - bifrost-neutron-install
     - bifrost-horizon-install
