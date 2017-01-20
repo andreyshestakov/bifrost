@@ -13,7 +13,7 @@
     - name: "Create bridge"
       raw: brctl addbr {{ network_interface }}
     - name: "setup IP on Ironic interface"
-      raw: ifconfig {{ network_interface }} 10.20.0.2/24 up
+      raw: ifconfig {{ network_interface }} 10.100.0.2/24 up
     - name: "Add phys interface to bridge"
       raw: brctl addif {{ network_interface }} {{ neutron_network.phys_int }}
     - name: "Up phys interface"
