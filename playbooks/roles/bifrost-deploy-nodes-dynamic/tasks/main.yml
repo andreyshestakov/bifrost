@@ -94,9 +94,9 @@
     auth_type: "{{ auth_type | default(omit) }}"
     auth: "{{ auth | default(omit) }}"
     ironic_url: "{{ ironic_url }}"
-    uuid: "{{ uuid }}"
+    uuid: "{{ uuid | default() }}"
+    name: "{{ name | default() }}"
     state: present
     wait: true
-    config_drive: "{{ deploy_url_protocol }}://{{ hostvars[inventory_hostname]['ansible_' + ans_network_interface]['ipv4']['address'] }}:{{ file_url_port }}/configdrive-{{ uuid }}.iso.gz"
     instance_info: "{{ instance_info }}"
   when: instance_info is defined and instance_info | to_json != '{}'
