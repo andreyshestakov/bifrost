@@ -10,12 +10,12 @@
       raw: apt -y update
     - name: "install packages"
       raw: apt -y install --no-install-recommends python bridge-utils
-    - name: "Create bridge"
-      raw: brctl addbr {{ network_interface }}
+#    - name: "Create bridge"
+#      raw: brctl addbr {{ network_interface }}
     - name: "setup IP on Ironic interface"
       raw: ifconfig {{ network_interface }} 10.20.0.2/24 up
-    - name: "Add phys interface to bridge"
-      raw: brctl addif {{ network_interface }} {{ neutron_network.phys_int }}
+#    - name: "Add phys interface to bridge"
+#      raw: brctl addif {{ network_interface }} {{ neutron_network.phys_int }}
     - name: "Up phys interface"
       raw: ifconfig {{ neutron_network.phys_int }} up
 

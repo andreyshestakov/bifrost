@@ -1,0 +1,14 @@
+---
+remote_syslog_server: 10.20.0.1
+ssh_private_key_path: /home/ashestakov/ansible_deploy.rsa
+
+neutron_network:
+  phys_int: ens4
+  cidr: 10.20.0.0/24
+  gateway: 10.20.0.2
+  allocation_pool_start: 10.20.0.10
+  allocation_pool_end: 10.20.0.100
+  dns_nameservers:
+    - 8.8.8.8
+    - 8.8.4.4
+
