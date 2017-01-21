@@ -3,12 +3,17 @@
   command: systemctl daemon-reload
   when: init_template == 'systemd_template.j2'
 
+# restart because pip issue
 - name: "Ensure required services are started"
   service: name={{ item }} state=restarted
   with_items:
     - neutron-server
     - neutron-linuxbridge-agent
     - neutron-dhcp-agent
+
+- name : "Wait until neutron startup"
+  pause:
+    minutes: 1
 
 - name: "If in noauth mode, unset authentication parameters."
   set_fact:
