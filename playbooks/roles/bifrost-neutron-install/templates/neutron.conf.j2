@@ -1,7 +1,7 @@
 [DEFAULT]
 debug = {{ neutron.debug | bool }}
 use_stderr = false
-use_syslog = true
+use_syslog = false
 
 bind_host = 0.0.0.0
 
@@ -16,8 +16,10 @@ auth_strategy = keystone
 auth_strategy = noauth
 {% endif %}
 
-#[oslo_concurrency]
-#lock_path = /var/lib/neutron/tmp
+lock_path = /var/lib/neutron/tmp
+
+[oslo_concurrency]
+lock_path = /var/lib/neutron/tmp
 
 [oslo_messaging_rabbit]
 rabbit_userid = {{ neutron.message_queue.username }}
@@ -59,3 +61,6 @@ bridge_mappings = baremetal:{{ network_interface }}
 
 [vxlan]
 enable_vxlan = False
+
+[quotas]
+track_quota_usage = False
