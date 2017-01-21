@@ -30,3 +30,4 @@ collect_baremetal_logs: true
 internal_syslog_proto: tcp
 network_interface: "brbm"
 driver: pxe_ipmitool_ansible
+include_dhcp_server: false
