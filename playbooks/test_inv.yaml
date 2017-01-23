@@ -10,12 +10,7 @@
     nics:
       -
         mac: "52:54:00:9f:0a:30"
-    ipv4_address: "10.20.0.98"
     driver: "pxe_ssh_ansible"
-    tags:
-      - kube-master
-      - kube-node
-      - etcd
     name: "static-ip1"
     instance_info:
 
@@ -31,8 +26,4 @@
       -
         mac: "52:54:00:5a:60:2f"
     driver: "pxe_ssh_ansible"
-    ipv4_address: "10.20.0.66"
-    tags:
-      - kube-node
-      - etcd
     name: "static-ip2"

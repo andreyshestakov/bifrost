@@ -30,23 +30,3 @@ collect_baremetal_logs: true
 internal_syslog_proto: tcp
 network_interface: "brbm"
 driver: pxe_ipmitool_ansible
-
-#horizon_git_branch: c6d656a0b113cbef690550f959bb9663826388af
-#ironic_ui_git_url: https://github.com/andreyshestakov/ironic-ui
-#staging_drivers_git_url: https://github.com/andreyshestakov/ironic-staging-drivers
-#staging_drivers_git_branch: works
-
-# specific
-#ssh_public_key_path: /home/ashestakov/ansible_deploy.rsa.pub
-#remote_syslog_server: 10.20.0.1
-#ssh_private_key_path: /home/ashestakov/ansible_deploy.rsa
-
-#neutron_network:
-#  phys_int: ens4
-#  cidr: 10.20.0.0/24
-#  gateway: 10.20.0.2
-#  allocation_pool_start: 10.20.0.10
-#  allocation_pool_end: 10.20.0.100
-#  dns_nameservers:
-#    - 8.8.8.8
-#    - 8.8.4.4

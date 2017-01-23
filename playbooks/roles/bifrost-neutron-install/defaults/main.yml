@@ -22,10 +22,10 @@ bifrost_venv_env:
 
 neutron_network:
   bridge: "brbm"
-  cidr: 10.20.0.0/24
-  gateway: 10.20.0.2
-  allocation_pool_start: 10.20.0.10
-  allocation_pool_end: 10.20.0.100
+  cidr: 10.100.0.0/24
+  gateway: 10.100.0.2
+  allocation_pool_start: 10.100.0.10
+  allocation_pool_end: 10.100.0.100
   dns_nameservers:
     - 8.8.8.8
     - 8.8.4.4
