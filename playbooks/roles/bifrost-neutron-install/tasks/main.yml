@@ -19,6 +19,7 @@
   include: bootstrap.yml
   when: neutron.enable is defined and neutron.enable |bool == True and skip_bootstrap | bool != True
 
-- name: "Start Neutron services"
-  include: start.yml
-  when: neutron.enable is defined and neutron.enable |bool == True and skip_start | bool != True
+# do not start yet, because conflict in pip installations
+#- name: "Start Neutron services"
+#  include: start.yml
+#  when: neutron.enable is defined and neutron.enable |bool == True and skip_start | bool != True

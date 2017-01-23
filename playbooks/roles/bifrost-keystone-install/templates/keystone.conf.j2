@@ -14,6 +14,9 @@ allowed_origin = {{ cors_allowed_origin | default('allowed_origin=http://localho
 allow_credentials = {{ enable_cors_credential_support | default('true') }}
 {% endif %}
 
+[oslo_messaging_notifications]
+driver = noop
+
 [database]
 
 connection = mysql+pymysql://{{ keystone.database.username }}:{{ keystone.database.password }}@{{ keystone.database.host }}/{{ keystone.database.name }}?charset=utf8
